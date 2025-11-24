@@ -10,10 +10,7 @@
 
 class Pathfinder {
 public:
-    /**
-     * Encontra o caminho da posição start para goal usando BFS.
-     * Retorna uma lista de movimentos: {"up", "down", "left", "right"}.
-     */
+    
     std::vector<std::string> findPath(
         const std::vector<std::vector<char>>& maze,
         std::pair<int,int> start,

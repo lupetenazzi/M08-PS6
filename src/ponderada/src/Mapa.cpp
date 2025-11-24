@@ -24,12 +24,10 @@ std::pair<std::vector<std::string>, std::vector<uint8_t>> Mapa::getMaze() {
     {
         RCLCPP_INFO(node_->get_logger(), "Mapa recebido com sucesso!");
 
-        // PEGAR OS DOIS VALORES DO SERVICE
         auto response = future.get();
         auto flat = response->occupancy_grid_flattened;
         auto shape_raw = response->occupancy_grid_shape;
         
-        // Converter BoundedVector para std::vector
         std::vector<uint8_t> shape(shape_raw.begin(), shape_raw.end());
 
         return {flat, shape};
@@ -109,20 +107,17 @@ std::pair<int,int> Mapa::findTargetPosition(const std::vector<std::vector<char>>
 void Mapa::printMap(const std::vector<std::vector<char>>& matrix) {
     RCLCPP_INFO(node_->get_logger(), "\n========== MAPA ==========");
     
-    // Imprimir coordenadas X (colunas)
     std::string header = "     ";
     for (size_t j = 0; j < matrix[0].size(); j++) {
         header += std::to_string(j % 10);
     }
     RCLCPP_INFO(node_->get_logger(), "%s", header.c_str());
     
-    // Imprimir linhas do mapa
     for (size_t i = 0; i < matrix.size(); i++) {
         std::string line = std::to_string(i);
         line += "    ";
         for (size_t j = 0; j < matrix[i].size(); j++) {
             char cell = matrix[i][j];
-            // Converter caracteres para símbolos mais claros
             if (cell == 'b') line += "#";      // parede
             else if (cell == 'f') line += " ";  // caminho livre
             else if (cell == 'r') line += "R";  // robô

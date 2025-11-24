@@ -52,12 +52,11 @@ std::vector<std::string> Pathfinder::findPath(
         }
     }
 
-    // ---------- RECONSTRUIR O CAMINHO ----------
     std::vector<std::string> moves;
     int gx = goal.first, gy = goal.second;
 
     if (!visited[gx * cols + gy]) {
-        return {}; // sem caminho
+        return {}; 
     }
 
     std::vector<std::pair<int,int>> path;
@@ -72,7 +71,6 @@ std::vector<std::string> Pathfinder::findPath(
     path.push_back(start);
     std::reverse(path.begin(), path.end());
 
-    // ---------- TRADUZIR PARA MOVIMENTOS ----------
     for (size_t i = 1; i < path.size(); i++) {
         int x1 = path[i-1].first;
         int y1 = path[i-1].second;

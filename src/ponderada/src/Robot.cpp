@@ -8,7 +8,6 @@ bool Robot::move(const std::string &direction) {
     auto request = std::make_shared<cg_interfaces::srv::MoveCmd::Request>();
     request->direction = direction; 
 
-    // Espera o serviço ficar disponível
     if (!client_->wait_for_service(std::chrono::seconds(2))) {
         RCLCPP_ERROR(node_->get_logger(), "Service move_command não disponível!");
         return false;

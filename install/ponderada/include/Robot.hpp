@@ -9,7 +9,6 @@ class Robot {
 public:
     Robot(rclcpp::Node::SharedPtr node);
 
-    // Envia um comando de movimento: 'up', 'down', 'left', 'right'
     bool move(const std::string &direction);
 
 private:
