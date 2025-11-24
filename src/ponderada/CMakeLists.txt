@@ -37,8 +37,23 @@ target_include_directories(robot_lib PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+# Add library for Pathfinder class
+add_library(pathfinder_lib src/Pathfinder.cpp)
+ament_target_dependencies(pathfinder_lib rclcpp)
+target_include_directories(pathfinder_lib PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+# Add library for Solution class
+add_library(solution_lib src/Solution.cpp)
+ament_target_dependencies(solution_lib rclcpp cg_interfaces)
+target_link_libraries(solution_lib mapa_lib pathfinder_lib)
+target_include_directories(solution_lib PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
 # Install library
-install(TARGETS mapa_lib robot_lib
+install(TARGETS mapa_lib robot_lib pathfinder_lib solution_lib
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
@@ -46,15 +61,15 @@ install(TARGETS mapa_lib robot_lib
 # Install headers
 install(DIRECTORY include/ DESTINATION include)
 
-# Add executable for main
-add_executable(solution_tester src/main.cpp)
-ament_target_dependencies(solution_tester rclcpp)
-target_link_libraries(solution_tester mapa_lib robot_lib)
-target_include_directories(solution_tester PUBLIC
+# Add executable for solution (uses Solution class directly)
+add_executable(solution src/main.cpp)
+ament_target_dependencies(solution rclcpp)
+target_link_libraries(solution solution_lib)
+target_include_directories(solution PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-# Install executable
-install(TARGETS solution_tester DESTINATION lib/${PROJECT_NAME})
+# Install solution executable
+install(TARGETS solution DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
