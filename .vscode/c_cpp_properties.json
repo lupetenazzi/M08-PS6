@@ -6,6 +6,8 @@
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/build",
                 "${workspaceFolder}/install",
+                "${workspaceFolder}/install/ponderada2/include",
+                "${workspaceFolder}/install/cg_interfaces/include",
                 "/opt/ros/jazzy/include",
                 "/opt/ros/jazzy/opt/rviz_ogre_vendor/include",
                 "/usr/include/x86_64-linux-gnu",
@@ -16,7 +18,8 @@
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "linux-gcc-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "compileCommands": "${workspaceFolder}/compile_commands.json"
         }
     ],
     "version": 4
