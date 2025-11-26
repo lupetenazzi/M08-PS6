@@ -1,7 +1,7 @@
 # Ponderada 1 e 2 — ROS2, Navegação em Labirinto e Algoritmos de Busca
 
 
-Vídeo de apresentação da ponderada:
+Vídeo de apresentação da ponderada: https://youtu.be/r959nu6dlZQ
 
 Essa ponderada envolve a implementação de dois sistemas independentes de navegação robótica utilizando ROS2. Cada parte aborda um cenário distinto de navegação em labirinto.
 
@@ -28,6 +28,12 @@ A meta final é que o robô chegue ao alvo utilizando o menor caminho possível.
 Na Parte 1 foi implementado o algoritmo BFS para encontrar o caminho mais curto. 
 O BFS percorre o labirinto camada por camada, explorando todos os vizinhos de uma posição antes de avançar para o próximo nível da busca. Quando o alvo é encontrado, o caminho é reconstruído de trás para frente.
 
+## Como executar a parte 1
+
+```
+ros2 run ponderada solution
+```
+
 ## Maiores Dificuldades da Parte 1
 
 - Garantir compatibilidade com o simulador no uso de services.
@@ -53,6 +59,13 @@ A Parte 2 simula um robô real com sensores limitados. O objetivo é:
 ## Algoritmo: DFS (Depth-First Search) com Backtracking
 
 Na Parte 2 o algoritmo central é o DFS. O DFS é adequado para exploração completa porque segue sempre adiante e retrocede apenas quando necessário.
+
+## Como executar a parte 1
+
+```
+ros2 run ponderada2 main_solver
+```
+
 
 ## Maiores Dificuldades da Parte 2
 
