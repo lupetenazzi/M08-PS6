@@ -1,92 +1,141 @@
-# Ponderada 1 e 2 — ROS2, Navegação em Labirinto e Algoritmos de Busca
+# Projeto Culling Games (cg)
 
+Este documento fornece um tutorial sobre como construir, executar e interagir
+com o projeto Culling Games ROS 2.
 
-Vídeo de apresentação da ponderada: https://youtu.be/r959nu6dlZQ
+## 1. Construindo o Workspace
 
-Essa ponderada envolve a implementação de dois sistemas independentes de navegação robótica utilizando ROS2. Cada parte aborda um cenário distinto de navegação em labirinto.
+Antes de executar qualquer parte do projeto, você precisa construir os pacotes.
+Navegue até a raiz do workspace e execute:
 
-A Parte 1 assume conhecimento total do ambiente, enquanto a Parte 2 simula um robô explorador com sensores limitados que precisa construir o mapa sozinho. Ambas as partes utilizam algoritmos fundamentais de grafos (BFS e DFS), integração via ROS2 e comunicação baseada em serviços.
-
----
-
-# Parte 1 — Navegação com Mapa Completo
-
-## Objetivo
-
-O objetivo da Parte 1 é permitir que o robô:
-
-1. Obtenha o mapa completo do labirinto através do serviço `get_map`;
-2. Converta esse mapa em uma matriz manipulável;
-3. Localize sua posição inicial e a posição do alvo;
-4. Calcule o caminho mais curto entre esses dois pontos utilizando um algoritmo de busca apropriado;
-5. Execute o caminho movendo-se passo a passo através do serviço `move_command`.
-
-A meta final é que o robô chegue ao alvo utilizando o menor caminho possível.
-
-## Algoritmo: BFS (Breadth-First Search)
-
-Na Parte 1 foi implementado o algoritmo BFS para encontrar o caminho mais curto. 
-O BFS percorre o labirinto camada por camada, explorando todos os vizinhos de uma posição antes de avançar para o próximo nível da busca. Quando o alvo é encontrado, o caminho é reconstruído de trás para frente.
-
-## Como executar a parte 1
-
-```
-ros2 run ponderada solution
+```bash
+colcon build
 ```
 
-## Maiores Dificuldades da Parte 1
+Este comando irá compilar todos os pacotes (`cg`, `cg_interfaces`, `cg_teleop`).
+Lembre-se de "source" o workspace em qualquer novo terminal que você abrir:
 
-- Garantir compatibilidade com o simulador no uso de services.
-- Integrar o algoritmo de grafos com chamadas reais ao robô através do serviço `move_command`.
-
-
----
-
-# Parte 2 — Exploração, Mapeamento e Busca Cega
-
-## Objetivo
-
-A Parte 2 simula um robô real com sensores limitados. O objetivo é:
-
-1. Explorar o ambiente sem possuir o mapa completo.
-2. Construir o mapa gradualmente enquanto se move.
-3. Utilizar sensores que indicam apenas a presença de paredes ao redor.
-4. Encontrar o alvo durante a exploração, mesmo sem saber previamente onde ele está.
-5. Realizar backtracking para garantir que todas as regiões acessíveis sejam exploradas.
-
-
-
-## Algoritmo: DFS (Depth-First Search) com Backtracking
-
-Na Parte 2 o algoritmo central é o DFS. O DFS é adequado para exploração completa porque segue sempre adiante e retrocede apenas quando necessário.
-
-## Como executar a parte 1
-
-```
-ros2 run ponderada2 main_solver
+```bash
+source install/setup.bash
 ```
 
+## 2. Executando o Jogo
 
-## Maiores Dificuldades da Parte 2
+O jogo principal é uma janela Pygame que exibe o labirinto e o movimento do
+robô.
 
-- Implementação de um mapa incremental consistente.
-- Evitar loops durante a exploração.
-- Sincronizar o backtracking com movimentação real via serviços.
-- Representar corretamente as paredes percebidas pelos sensores.
-- Criar uma estrutura robusta de visitação para o DFS.
+Para iniciar o jogo, execute o seguinte comando em um terminal:
 
-## Limitações da Parte 2
+```bash
+ros2 run cg maze
+```
 
-- O algoritmo não escolhe o melhor caminho até o alvo.
+### Opções de Carregamento do Labirinto
 
----
+Você pode especificar como o labirinto é carregado usando argumentos adicionais:
 
-# Conclusão
+*   **Carregar um Labirinto Aleatório (Padrão):** Se nenhum argumento for fornecido, o jogo selecionará um labirinto aleatório do diretório `src/cg/maps`.
+    ```bash
+    ros2 run cg maze
+    ```
+*   **Carregar um Labirinto Específico:** Para carregar um labirinto pelo nome do arquivo (por exemplo, `test.csv`):
+    ```bash
+    ros2 run cg maze -- --map test.csv
+    ```
+*   **Gerar um Novo Labirinto:** Para gerar um novo labirinto aleatório e usá-lo imediatamente (esta opção tem precedência sobre `--map`):
+    ```bash
+    ros2 run cg maze -- --generate
+    ```
 
-As duas partes da atividade abordam problemas de navegação com níveis crescentes de complexidade:
+## 3. Controlando o Robô
 
-- A Parte 1 apresenta um cenário com informações completas, ideal para o uso de algoritmos ótimos como BFS.
-- A Parte 2 se aproxima mais de um robô real, que precisa explorar, construir um mapa e tomar decisões com base em informações incompletas.
+Existem duas maneiras de controlar o robô: usando o nó de teleoperação fornecido
+ou enviando chamadas de serviço.
 
-Este projeto demonstra o uso de ROS2 integrado a algoritmos clássicos de grafos em dois cenários com níveis diferentes de autonomia e informação disponível.
+### Método A: Usando o Nó de Teleoperação por Teclado
 
+Esta é a maneira mais fácil de jogar.
+
+1.  Em um **terminal separado** (enquanto o comando `ros2 run cg maze` ainda
+    estiver em execução), inicie o nó de teleoperação:
+    ```bash
+    ros2 run cg_teleop teleop_keyboard
+    ```
+2.  O terminal exibirá as teclas de atalho. Use as seguintes teclas neste
+    terminal para mover o robô na janela do jogo:
+    *   **Cima:** `w`, `k`, ou a tecla Seta para Cima
+    *   **Baixo:** `s`, `j`, ou a tecla Seta para Baixo
+    *   **Esquerda:** `a`, `h`, ou a tecla Seta para Esquerda
+    *   **Direita:** `d`, `l`, ou a tecla Seta para Direita
+
+### Método B: Enviando Chamadas de Serviço Manuais
+
+Você também pode enviar comandos de movimento individuais usando o serviço
+`/move_command`. Isso é útil para scripts ou depuração.
+
+Para mover o robô um passo, use o comando `ros2 service call`. Por exemplo, para
+mover para cima:
+
+```bash
+ros2 service call /move_command cg_interfaces/srv/MoveCmd "{direction: 'up'}"
+```
+
+Substitua `'up'` por `'down'`, `'left'` ou `'right'` para outras direções.
+
+## 4. Sensoriamento do Ambiente
+
+O robô publica continuamente seus arredores imediatos em um tópico. Isso simula
+dados de sensores, mostrando o que está nas 8 células adjacentes (incluindo
+diagonais).
+
+*   **Tópico:** `/culling_games/robot_sensors`
+*   **Tipo de Mensagem:** `cg_interfaces/msg/RobotSensors`
+
+Para ver esses dados em tempo real, abra um novo terminal e execute:
+
+```bash
+ros2 topic echo /culling_games/robot_sensors
+```
+
+Você verá um fluxo de mensagens mostrando o que está nas células `up`, `down`,
+`left`, `right`, `up_left`, etc., em relação ao robô.
+
+## 5. Reiniciando o Jogo
+
+O serviço `/reset` permite reiniciar o tabuleiro do jogo. Ele suporta dois
+modos.
+
+### Reiniciando o Labirinto Atual
+
+Se você quiser tentar o *mesmo* labirinto novamente desde o início.
+
+*   **Com Teleoperação:** Pressione a tecla `r` no terminal `cg_teleop`.
+*   **Comando Manual:**
+    ```bash
+    ros2 service call /reset cg_interfaces/srv/Reset "{is_random: false}"
+    ```
+
+### Carregando um Novo Labirinto Aleatório
+
+Se você quiser um novo desafio com um labirinto novo e selecionado
+aleatoriamente.
+
+*   **Com Teleoperação:** Pressione a tecla `n` no terminal `cg_teleop`.
+*   **Comando Manual:**
+    ```bash
+    ros2 service call /reset cg_interfaces/srv/Reset "{is_random: true}"
+    ```
+A resposta do serviço informará o nome do arquivo do novo labirinto que foi
+carregado.
+
+## 6. Obtendo os Dados Completos do Labirinto
+
+Se você quiser obter o layout de todo o labirinto atual (por exemplo, para
+construir um mapa externo), você pode usar o serviço `/get_map`.
+
+```bash
+ros2 service call /get_map cg_interfaces/srv/GetMap
+```
+
+Isso retornará uma representação "achatada" da grade do labirinto e suas
+dimensões.
