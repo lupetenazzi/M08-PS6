@@ -10,7 +10,6 @@
 Robo::Robo(rclcpp::Node::SharedPtr node) {
     node_ = node;
     
-    // Usar QoS RELIABLE para compatibilidade com o servidor
     rclcpp::QoS qos = rclcpp::ServicesQoS();
     
     client_ = node_->create_client<cg_interfaces::srv::MoveCmd>(
@@ -48,13 +47,3 @@ bool Robo::movimentoRobo(std::string direction) {
 }
 
 
-
-
-// direita, direita, cima, baixo
-
-// std::vector<std::string> listaComandos = {"right", "right", "up", "down"};
-
-/*
-Pra cada valor nessa lista
-movimentoRobo("right")
-*/

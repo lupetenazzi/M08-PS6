@@ -1,10 +1,12 @@
 #include "rclcpp/rclcpp.hpp"
 #include "Mapa.hpp"
 #include "Robo.hpp"
+#include "Algoritmo.hpp"
 #include <iostream>
+#include <chrono>
 
-int main(int argc, char **argv){
-    // Configurar opções de QoS para compatibilidade
+int main(int argc, char **argv) {
+    
     rclcpp::NodeOptions node_options;
     node_options.use_intra_process_comms(true);
     
@@ -22,14 +24,17 @@ int main(int argc, char **argv){
         std::cout << std::endl;
     }
 
-    Robo robo(node);
-    bool success = robo.movimentoRobo("down");
+    Algoritmo algoritmo(node);
+    auto comandos = algoritmo.gerarComandos();
 
-    std::cout << "Movimento realizado com sucesso: " << std::boolalpha << success << std::endl;
+    Robo robo(node);
+    for (const auto& cmd : comandos) {
+        robo.movimentoRobo(cmd);
+        rclcpp::sleep_for(std::chrono::milliseconds(500));
+    }
 
     rclcpp::shutdown();
     return 0;
-
 }
 
 

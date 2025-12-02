@@ -29,6 +29,7 @@ add_executable(main
   src/Main.cpp 
   src/Mapa.cpp
   src/Robo.cpp
+  src/Algoritmo.cpp
 )
 
 # include directories for the project
