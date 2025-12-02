@@ -20,6 +20,19 @@ Posicao Algoritmo::encontrarPosicao(std::vector<std::vector<char>>& mapa, char m
 
 std::vector<Posicao> Algoritmo::menorCaminho(std::vector<std::vector<char>>& mapa, Posicao inicio, Posicao destino) {
 
+
+/*
+Pseudocódigo de funcionamento do BFS: 
+
+create a queue Q 
+mark v as visited and put v into Q 
+while Q is non-empty 
+    remove the head u of Q 
+    mark and enqueue all (unvisited) neighbours of u
+
+*/
+
+
     int h = mapa.size();
     int w = mapa[0].size();
     
