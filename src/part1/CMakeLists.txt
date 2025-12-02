@@ -14,6 +14,7 @@ find_package(cg_interfaces REQUIRED)
 # additional dependencies needed for linking (spdlog used by rcl_logging_spdlog, and system numa)
 find_package(spdlog REQUIRED)
 find_package(Threads REQUIRED)
+find_package(fmt REQUIRED)
 
 # try to locate libnuma (some systems name it 'numa' or 'libnuma')
 find_library(NUMA_LIB NAMES numa libnuma)
@@ -23,20 +24,38 @@ else()
   message(WARNING "libnuma not found - you may need to install libnuma (e.g. libnuma-dev) or add its path to LD_LIBRARY_PATH")
 endif()
 
-add_executable(main src/Main.cpp src/Mapa.cpp)
+# create executable with all source files
+add_executable(main 
+  src/Main.cpp 
+  src/Mapa.cpp
+  src/Robo.cpp
+)
+
+# include directories for the project
 target_include_directories(main PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:include>
+)
+
+# link ROS2 dependencies
 ament_target_dependencies(main
   rclcpp
   std_msgs
-  cg_interfaces)
+  cg_interfaces
+)
 
-# link spdlog and threads and numa if available to resolve transitive symbols
-target_link_libraries(main spdlog::spdlog Threads::Threads ${NUMA_LIB})
+# link external libraries: spdlog, fmt, threads, and numa (if available)
+target_link_libraries(main 
+  spdlog::spdlog 
+  fmt::fmt
+  Threads::Threads 
+  ${NUMA_LIB}
+)
 
-# ensure runtime linker can find ROS libs installed under /opt/ros/jazzy
+# set C++ standard
 set_target_properties(main PROPERTIES
+  CXX_STANDARD 17
+  CXX_STANDARD_REQUIRED ON
   INSTALL_RPATH "/opt/ros/jazzy/lib;$ORIGIN/../lib"
 )
 
